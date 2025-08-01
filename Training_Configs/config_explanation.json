@@ -1,0 +1,100 @@
+{
+    "--max_train_steps": "controls the legth of training",
+    "--checkpointing_steps": "interval (in steps) of how often the checkpoints are saved",
+    "--checkpoints_total_limit": "maximum number off checkpoints to save, old checkpoints are deleted",
+    "--validation_prompt": "prompt used to validate and test model generalization.",
+    "--lora_rank": "quality and speed of a LoRA lower number is smaller/faster than higher numbers, generally set at 16, but can set to 4, 8, 16 or 32",
+    "--flux_lora_target": "Target module in Flux to apply LoRA to (e.g., mmdit, set to 'all' if training a 'standard' --lora_type",
+    "--resume_from_checkpoint": "If set, resumes training from the latest or specified checkpoint",
+    "--data_backend_config": "Path to JSON file defining image dataset paths and label settings",
+    "--aspect_bucket_rounding": "Rounding control for image aspect buckets. 0 = exact; >0 = coarser bins",
+    "--seed": "fixed seed used for reproducibility across training runs (42)",
+    "--minimum_image_size": "Skips training images smaller than this value (in pixels on the short side).",
+    "--output_dir": "Directory where trained models and checkpoints will be saved",
+    "--lora_type": "Type of adapter to use. 'lycoris' or 'standard'. set --flux_lora_target to 'all' when training a standard lora",
+    "--lycoris_config": "Path to JSON config file defining lycoris-specific parameters",
+    "--num_train_epochs": "determins the length of training Ignored when max_train_steps is set; only used if max_train_steps = 0.",
+    "--hub_model_id": "Name used to register or push model to Hugging Face hub (optional)",
+    "--report_to": "Tracking backend to use. Options: 'wandb', 'tensorboard', 'none'.",
+    "--tracker_project_name": "Name of the project in WandB for experiment tracking",
+    "--tracker_run_name": "version number of tracked project name for WandB tracking",
+    "--model_type": "lora",
+    "--pretrained_model_name_or_path": "Flux base model to fine-tune (e.g., black-forest-labs/FLUX.1-dev).",
+    "--model_family": "Family of the model (e.g., 'flux', 'sdxl', 'muse', used to load correct architecture).",
+    "--model_flavour": "this is krea by default, but may be set to dev to train the original FLUX.1-Dev release.
+            krea - The default FLUX.1-Krea [dev] model, an open-weights variant of Krea 1, a proprietary model collaboration between BFL and Krea.ai
+            dev - Dev model flavour, the previous default
+            schnell - Schnell model flavour, and set any appropriate options incl. fast training schedule
+            kontext - Kontext training (see this guide for specific guidance)
+            fluxbooru - A de-distilled (requires CFG) model based on FLUX.1-Dev called FluxBooru, created by terminus research group
+            libreflux - A de-distilled model based on FLUX.1-Schnell that requires attention masking on the T5 text encoder inputs",
+    "--train_batch_size": "Number of image samples per training step.",
+    "--gradient_checkpointing": "If true, reduces memory usage by recomputing activations during backward pass. always use",
+    "--caption_dropout_probability": "Randomly drops captions during training with this probability.",
+    "--resolution_type": "Controls how input image resolution is interpreted. 'pixel_area' uses pixel count.",
+    "--resolution": "Target resolution value (e.g., 1024px area or side depending on resolution_type).",
+    "--validation_seed": "Fixed seed for reproducibility of validation generations.",
+    "--validation_steps": "How often (in steps) to generate validation images.",
+    "--validation_resolution": "Resolution of generated validation images (e.g., '1024x1024').",
+    "--validation_guidance": "CFG guidance scale used during validation image generation.",
+    "--validation_guidance_rescale": "Rescale factor applied to guidance (for balancing diversity vs. fidelity).",
+    "--validation_num_inference_steps": "Number of denoising steps used during validation inference.",
+    "--mixed_precision": "Precision mode: 'fp16', 'bf16', or 'no'. Lower precision speeds up training.",
+    "--optimizer": "Optimizer type used for gradient updates. E.g., 'adamw_bf16'.",
+    "--learning_rate": "Base learning rate for the optimizer.",
+    "--lr_scheduler": "Learning rate scheduling strategy (e.g., cosine, polynomial, constant).",
+    "--lr_warmup_steps": "Number of warmup steps before applying full learning rate.",
+    "--validation_torch_compile": "If true, uses torch.compile on validation graph for faster generation.",
+    "--disable_benchmark": "Disables model benchmarking on init. Use if you want deterministic behavior.",
+    "--base_model_precision": "Precision of the base model weights (e.g., 'int8-quanto', 'fp16').",
+    "--text_encoder_1_precision": "Precision setting for first text encoder. 'no_change' = leave as-is.",
+    "--text_encoder_2_precision": "Same as above for second text encoder (used in dual-encoder models).",
+    "--max_grad_norm": "Gradient clipping value to prevent exploding gradients.",
+    "--base_model_default_dtype": "Default dtype used when loading model (e.g., 'bf16')."
+}
+{
+  "tread_config": {
+    "routes": [
+      {
+        "selection_ratio": 0.5, # Conservative (quality-focused): Use selection_ratio of 0.3-0.5 Aggressive (speed-focused): Use selection_ratio of 0.6-0.8
+        "start_layer_idx": 2,
+        "end_layer_idx": -2
+      }
+    ]
+  }
+}
+
+
+optional flags:
+"--offload_during_startup": Set this to true if you run out of memory during VAE encodes.
+gradient_accumulation_steps - Previous guidance was to avoid these with bf16 training since they would degrade the model. Further testing showed this is not necessarily the case for Flux.
+This option causes update steps to be accumulated over several steps. This will increase the training runtime linearly, such that a value of 2 will make your training run half as quickly, and take twice as long.
+"--flux_fast_schedule=true": set to true if training a schnell lora
+"--user_prompt_library": "config/user_prompt_library.json", used to create additional prompts for validation, does not influence training
+
+
+scheduler 
+
+optimizer
+polynomial
+adamw_bf16 - Common for stable and fast training, with AdamW_bf16 using bfloat16 for reduced memory usage
+optimi-lion
+optimi-stableadamw
+Prodigy
+AdamW - Standard AdamW with float32 weights and gradients. Stable but memory-heavy
+Adafactor
+Dadaptation
+AdamW8Bit - AdamW optimizer using bitsandbytes 8-bit optimization. Lower memory usage
+
+Training custom fine-tuned Flux models
+Some fine-tuned Flux models on Hugging Face Hub (such as Dev2Pro) lack the full directory structure, requiring these specific options be set.
+
+Make sure to set these options flux_guidance_value, validation_guidance_real and flux_attention_masked_training according to the way the creator did as well if that information is available.
+
+{
+    "model_family": "flux",
+    "pretrained_model_name_or_path": "black-forest-labs/FLUX.1-dev",
+    "pretrained_transformer_model_name_or_path": "ashen0209/Flux-Dev2Pro",
+    "pretrained_vae_model_name_or_path": "black-forest-labs/FLUX.1-dev",
+    "pretrained_transformer_subfolder": "none",
+}

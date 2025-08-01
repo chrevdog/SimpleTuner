@@ -1,0 +1,236 @@
+{
+  "user_prompt_library_explanation": {
+    "overview": "User prompt library allows you to define multiple validation prompts to test your model's performance during training",
+    
+    "purpose": {
+      "description": "The prompt library serves multiple purposes during training",
+      "uses": [
+        "Monitor model convergence and quality during training",
+        "Test model performance across different styles and scenarios", 
+        "Detect overfitting or model collapse",
+        "Validate that the model learns the intended concept"
+      ]
+    },
+    
+    "format": {
+      "description": "JSON object where keys are prompt nicknames and values are the actual prompts",
+      "structure": {
+        "nickname": "the actual prompt text goes here",
+        "another_nickname": "another prompt text"
+      },
+      "nickname_requirements": {
+        "description": "Nicknames become filenames for validation images",
+        "constraints": [
+          "Keep them short and filesystem-compatible",
+          "Avoid special characters that might cause issues",
+          "Use descriptive names that indicate the prompt type"
+        ]
+      }
+    },
+    
+    "prompt_design_principles": {
+      "flux_specific": {
+        "description": "Flux is a flow-matching model with unique characteristics",
+        "important_notes": [
+          "Shorter prompts with strong similarities produce practically identical images",
+          "Use longer, more descriptive prompts for better variety",
+          "Include specific details about style, composition, lighting, etc."
+        ]
+      },
+      "subject_replacement": {
+        "description": "Use <token> as a placeholder for your subject name",
+        "example": "Replace <token> with your actual subject name (e.g., 'john', 'my_cat', 'art_style')"
+      },
+      "diversity": {
+        "description": "Include a variety of prompt types to test different aspects",
+        "categories": [
+          "Basic portraits",
+          "Stylized versions (anime, artistic, etc.)",
+          "Professional contexts (chef, doctor, etc.)",
+          "Different moods and atmospheres",
+          "Generic subjects (man, woman, boy, girl)"
+        ]
+      }
+    },
+    
+    "prompt_categories": {
+      "portrait_styles": {
+        "anime_<token>": {
+          "description": "Anime-style portrait",
+          "prompt": "a breathtaking anime-style portrait of <token>, capturing her essence with vibrant colors and expressive features"
+        },
+        "cinematic_<token>": {
+          "description": "Cinematic, dramatic portrait",
+          "prompt": "a cinematic, visually stunning photo of <token>, emphasizing her dramatic and captivating presence"
+        },
+        "elegant_<token>": {
+          "description": "Elegant, sophisticated portrait",
+          "prompt": "an elegant and timeless portrait of <token>, exuding grace and sophistication"
+        },
+        "vintage_<token>": {
+          "description": "Vintage-style portrait",
+          "prompt": "a vintage-style portrait of <token>, evoking the charm and nostalgia of a bygone era"
+        }
+      },
+      "professional_contexts": {
+        "chef_<token>": {
+          "description": "Professional chef context",
+          "prompt": "a high-quality, detailed photograph of <token> as a sous-chef, immersed in the art of culinary creation"
+        },
+        "doctor_<token>": {
+          "description": "Medical professional context",
+          "prompt": "a professional portrait of <token> as a doctor, wearing a white coat and stethoscope"
+        },
+        "artist_<token>": {
+          "description": "Creative professional context",
+          "prompt": "a creative portrait of <token> as an artist, surrounded by paintings and art supplies"
+        }
+      },
+      "mood_and_atmosphere": {
+        "mysterious_<token>": {
+          "description": "Mysterious, enigmatic mood",
+          "prompt": "a mysterious and enigmatic portrait of <token>, shrouded in shadows and intrigue"
+        },
+        "adventurous_<token>": {
+          "description": "Dynamic, action-oriented",
+          "prompt": "a dynamic and adventurous photo of <token>, captured in an exciting, action-filled moment"
+        },
+        "artistic_<token>": {
+          "description": "Abstract, artistic representation",
+          "prompt": "an artistic and abstract representation of <token>, blending creativity with visual storytelling"
+        }
+      },
+      "generic_subjects": {
+        "woman": {
+          "description": "Generic woman portrait",
+          "prompt": "a beautifully crafted portrait of a woman, highlighting her natural beauty and unique features"
+        },
+        "man": {
+          "description": "Generic man portrait", 
+          "prompt": "a powerful and striking portrait of a man, capturing his strength and character"
+        },
+        "boy": {
+          "description": "Generic boy portrait",
+          "prompt": "a playful and spirited portrait of a boy, capturing youthful energy and innocence"
+        },
+        "girl": {
+          "description": "Generic girl portrait",
+          "prompt": "a charming and vibrant portrait of a girl, emphasizing her bright personality and joy"
+        }
+      }
+    },
+    
+    "integration_with_training": {
+      "config_setup": {
+        "description": "To use the prompt library, add it to your main config.json",
+        "step": "Add this line to your config.json:",
+        "code": "\"--user_prompt_library\": \"config/user_prompt_library.json\""
+      },
+      "validation_frequency": {
+        "description": "Prompts are used during validation steps",
+        "frequency": "Runs every validation_steps iterations (default: 1000)",
+        "output": "Generates one image per prompt in the library"
+      }
+    },
+    
+    "customization_guidelines": {
+      "for_subject_training": {
+        "description": "When training a specific subject",
+        "recommendations": [
+          "Replace <token> with your subject's name",
+          "Include both close-up and full-body prompts",
+          "Add prompts in different styles and contexts",
+          "Include some prompts without the subject name to test generalization"
+        ]
+      },
+      "for_style_training": {
+        "description": "When training a style or artistic approach",
+        "recommendations": [
+          "Focus on prompts that emphasize the style characteristics",
+          "Include prompts with different subjects to test style transfer",
+          "Add prompts that describe the style's key features",
+          "Include some neutral prompts to test style application"
+        ]
+      },
+      "for_concept_training": {
+        "description": "When training a concept or object",
+        "recommendations": [
+          "Use descriptive prompts that highlight the concept",
+          "Include prompts in different contexts and settings",
+          "Add prompts that test the concept's integration with other elements",
+          "Include some prompts that might challenge the concept"
+        ]
+      }
+    },
+    
+    "example_libraries": {
+      "minimal": {
+        "description": "Basic library for quick testing",
+        "prompts": {
+          "basic": "a portrait of <token>",
+          "style": "an artistic portrait of <token>",
+          "generic": "a portrait of a person"
+        }
+      },
+      "comprehensive": {
+        "description": "Full library for thorough validation",
+        "prompts": {
+          "anime_<token>": "a breathtaking anime-style portrait of <token>, capturing her essence with vibrant colors and expressive features",
+          "chef_<token>": "a high-quality, detailed photograph of <token> as a sous-chef, immersed in the art of culinary creation",
+          "just_<token>": "a lifelike and intimate portrait of <token>, showcasing her unique personality and charm",
+          "cinematic_<token>": "a cinematic, visually stunning photo of <token>, emphasizing her dramatic and captivating presence",
+          "elegant_<token>": "an elegant and timeless portrait of <token>, exuding grace and sophistication",
+          "adventurous_<token>": "a dynamic and adventurous photo of <token>, captured in an exciting, action-filled moment",
+          "mysterious_<token>": "a mysterious and enigmatic portrait of <token>, shrouded in shadows and intrigue",
+          "vintage_<token>": "a vintage-style portrait of <token>, evoking the charm and nostalgia of a bygone era",
+          "artistic_<token>": "an artistic and abstract representation of <token>, blending creativity with visual storytelling",
+          "futuristic_<token>": "a futuristic and cutting-edge portrayal of <token>, set against a backdrop of advanced technology",
+          "woman": "a beautifully crafted portrait of a woman, highlighting her natural beauty and unique features",
+          "man": "a powerful and striking portrait of a man, capturing his strength and character",
+          "boy": "a playful and spirited portrait of a boy, capturing youthful energy and innocence",
+          "girl": "a charming and vibrant portrait of a girl, emphasizing her bright personality and joy",
+          "family": "a heartwarming and cohesive family portrait, showcasing the bonds and connections between loved ones"
+        }
+      }
+    },
+    
+    "best_practices": {
+      "prompt_design": [
+        "Use descriptive, detailed prompts rather than short ones",
+        "Include specific details about lighting, composition, style",
+        "Test both with and without the subject name",
+        "Include prompts that might challenge the model"
+      ],
+      "organization": [
+        "Use clear, descriptive nicknames for easy identification",
+        "Group related prompts together in your mental organization",
+        "Keep the library manageable in size (10-20 prompts is usually sufficient)"
+      ],
+      "monitoring": [
+        "Review validation images regularly during training",
+        "Look for signs of overfitting or model collapse",
+        "Adjust prompts if needed based on training progress"
+      ]
+    },
+    
+    "troubleshooting": {
+      "common_issues": {
+        "identical_images": {
+          "description": "All prompts producing similar images",
+          "cause": "Prompts too similar or model overfitting",
+          "solution": "Use more diverse, detailed prompts"
+        },
+        "poor_quality": {
+          "description": "Validation images look poor",
+          "cause": "Model not converged or training issues",
+          "solution": "Check training parameters and dataset quality"
+        },
+        "subject_not_appearing": {
+          "description": "Subject not appearing in generated images",
+          "cause": "Insufficient training or poor dataset",
+          "solution": "Review dataset quality and training duration"
+        }
+      }
+    }
+  }
+} 

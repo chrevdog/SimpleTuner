@@ -1,0 +1,17 @@
+{
+    "anime_<token>": "a breathtaking anime-style portrait of <token>, capturing her essence with vibrant colors and expressive features",
+    "chef_<token>": "a high-quality, detailed photograph of <token> as a sous-chef, immersed in the art of culinary creation",
+    "just_<token>": "a lifelike and intimate portrait of <token>, showcasing her unique personality and charm",
+    "cinematic_<token>": "a cinematic, visually stunning photo of <token>, emphasizing her dramatic and captivating presence",
+    "elegant_<token>": "an elegant and timeless portrait of <token>, exuding grace and sophistication",
+    "adventurous_<token>": "a dynamic and adventurous photo of <token>, captured in an exciting, action-filled moment",
+    "mysterious_<token>": "a mysterious and enigmatic portrait of <token>, shrouded in shadows and intrigue",
+    "vintage_<token>": "a vintage-style portrait of <token>, evoking the charm and nostalgia of a bygone era",
+    "artistic_<token>": "an artistic and abstract representation of <token>, blending creativity with visual storytelling",
+    "futuristic_<token>": "a futuristic and cutting-edge portrayal of <token>, set against a backdrop of advanced technology",
+    "woman": "a beautifully crafted portrait of a woman, highlighting her natural beauty and unique features",
+    "man": "a powerful and striking portrait of a man, capturing his strength and character",
+    "boy": "a playful and spirited portrait of a boy, capturing youthful energy and innocence",
+    "girl": "a charming and vibrant portrait of a girl, emphasizing her bright personality and joy",
+    "family": "a heartwarming and cohesive family portrait, showcasing the bonds and connections between loved ones"
+}

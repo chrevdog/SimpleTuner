@@ -1,0 +1,107 @@
+{
+  "lycoris_config_explanation": {
+    "overview": "LyCORIS (Low-Rank Adaptation with Orthogonal Constraint) configuration file for advanced LoRA training options",
+    
+    "algo": {
+      "description": "The algorithm to use for LoRA training",
+      "options": {
+        "lokr": {
+          "description": "LoKr algorithm - recommended for most use cases",
+          "benefits": "Better performance than standard LoRA, especially for larger datasets",
+          "learning_rate": "Use higher learning rates (1e-3 with AdamW, 2e-4 with Lion)"
+        },
+        "lora": {
+          "description": "Standard LoRA algorithm",
+          "benefits": "Widely compatible, stable training",
+          "learning_rate": "Use lower learning rates (1e-5 to 1e-4) for large models"
+        },
+        "oft": {
+          "description": "Orthogonal Fine-Tuning",
+          "benefits": "Maintains model structure, good for style preservation",
+          "use_case": "When you want to preserve the original model's characteristics"
+        },
+        "ia3": {
+          "description": "IA³ (Infused Adapter by Inhibiting and Amplifying Inner Activations)",
+          "benefits": "Very parameter efficient",
+          "use_case": "When you need to minimize the number of trainable parameters"
+        }
+      }
+    },
+    
+    "multiplier": {
+      "description": "Global multiplier for all LoRA weights",
+      "default": 1.0,
+      "range": "0.0 to 2.0",
+      "effect": "Higher values increase the impact of the LoRA on the base model"
+    },
+    
+    "linear_dim": {
+      "description": "Dimension for linear layers in LoRA",
+      "default": 10000,
+      "effect": "Larger values increase model capacity but use more memory"
+    },
+    
+    "linear_alpha": {
+      "description": "Alpha parameter for linear layers",
+      "default": 1,
+      "effect": "Controls the scaling of LoRA weights"
+    },
+    
+    "factor": {
+      "description": "Factorization dimension for LoRA",
+      "default": 16,
+      "effect": "Higher values increase model capacity but may lead to overfitting"
+    },
+    
+    "apply_preset": {
+      "description": "Preset configuration for different module types",
+      "target_module": {
+        "description": "List of module types to apply LoRA to",
+        "options": ["Attention", "FeedForward", "CrossAttention"]
+      },
+      "module_algo_map": {
+        "description": "Specific algorithm settings for each module type",
+        "Attention": {
+          "factor": "Factorization dimension for attention layers (typically 16)"
+        },
+        "FeedForward": {
+          "factor": "Factorization dimension for feed-forward layers (typically 8)"
+        }
+      }
+    },
+    
+    "recommended_configurations": {
+      "conservative": {
+        "description": "For stable training with minimal risk",
+        "settings": {
+          "algo": "lokr",
+          "factor": 8,
+          "linear_dim": 5000
+        }
+      },
+      "balanced": {
+        "description": "Good balance of performance and stability",
+        "settings": {
+          "algo": "lokr", 
+          "factor": 16,
+          "linear_dim": 10000
+        }
+      },
+      "aggressive": {
+        "description": "For maximum model capacity",
+        "settings": {
+          "algo": "lokr",
+          "factor": 32,
+          "linear_dim": 20000
+        }
+      }
+    },
+    
+    "notes": {
+      "memory_usage": "Higher factor and linear_dim values increase VRAM usage",
+      "training_stability": "LoKr generally provides better training stability than standard LoRA",
+      "compatibility": "Ensure your inference platform supports the chosen algorithm",
+      "learning_rate": "LoKr typically requires higher learning rates than standard LoRA"
+    }
+  }
+} 

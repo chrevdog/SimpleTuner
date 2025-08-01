@@ -1,0 +1,227 @@
+{
+  "multidatabackend_explanation": {
+    "overview": "Multi-data backend configuration allows you to define multiple datasets and training strategies in a single configuration file",
+    
+    "dataset_types": {
+      "image": {
+        "description": "Standard image dataset for training",
+        "use_case": "Most common type for Dreambooth and style training"
+      },
+      "text_embeds": {
+        "description": "Text embeddings dataset for caching text encoder outputs",
+        "use_case": "Required for efficient training, caches text encoder outputs to disk"
+      }
+    },
+    
+    "common_settings": {
+      "id": {
+        "description": "Unique identifier for this dataset",
+        "example": "dreambooth-subject, pseudo-camera-10k, my-style-dataset"
+      },
+      "type": {
+        "description": "Data source type",
+        "options": {
+          "local": "Local directory on disk",
+          "huggingface": "Hugging Face dataset",
+          "web": "Web-based dataset"
+        }
+      },
+      "disabled": {
+        "description": "Whether to skip this dataset during training",
+        "default": false
+      }
+    },
+    
+    "image_dataset_settings": {
+      "crop": {
+        "description": "Whether to crop images to a specific aspect ratio",
+        "options": {
+          "true": "Crop images to specified aspect ratio",
+          "false": "Use images as-is (may cause issues with varying aspect ratios)"
+        }
+      },
+      "crop_aspect": {
+        "description": "Target aspect ratio for cropping",
+        "options": {
+          "square": "1:1 aspect ratio (recommended for Flux)",
+          "random": "Random aspect ratio from available options",
+          "portrait": "Taller than wide",
+          "landscape": "Wider than tall"
+        }
+      },
+      "crop_style": {
+        "description": "How to crop images when they don't match target aspect ratio",
+        "options": {
+          "center": "Crop from center (recommended for portraits)",
+          "random": "Random crop position (good for variety)",
+          "face": "Face-aware cropping (if available)"
+        }
+      },
+      "resolution": {
+        "description": "Target resolution for training",
+        "common_values": [512, 768, 1024],
+        "note": "Flux works well with 1024px, but 512px uses less VRAM"
+      },
+      "minimum_image_size": {
+        "description": "Minimum image size to include in dataset",
+        "default": "Same as resolution"
+      },
+      "maximum_image_size": {
+        "description": "Maximum image size to include in dataset", 
+        "default": "Same as resolution"
+      },
+      "target_downsample_size": {
+        "description": "Size to downsample images to",
+        "default": "Same as resolution"
+      },
+      "resolution_type": {
+        "description": "How to interpret resolution values",
+        "options": {
+          "pixel_area": "Total pixel count (recommended)",
+          "pixel_width": "Width in pixels",
+          "pixel_height": "Height in pixels"
+        }
+      }
+    },
+    
+    "caching_settings": {
+      "cache_dir_vae": {
+        "description": "Directory to cache VAE encoder outputs",
+        "format": "cache/vae/{model_family}/{dataset_id}",
+        "benefit": "Significantly speeds up training by caching VAE outputs"
+      },
+      "cache_dir": {
+        "description": "Directory to cache text encoder outputs (for text_embeds datasets)",
+        "format": "cache/text/{model_family}/{dataset_id}"
+      }
+    },
+    
+    "data_source_settings": {
+      "instance_data_dir": {
+        "description": "Path to directory containing training images",
+        "example": "datasets/dreambooth-subject"
+      },
+      "skip_file_discovery": {
+        "description": "Pattern to skip during file discovery",
+        "example": "*.txt, .DS_Store"
+      }
+    },
+    
+    "caption_strategy": {
+      "description": "How to generate captions for images",
+      "options": {
+        "instanceprompt": {
+          "description": "Use a fixed prompt for all images (Dreambooth)",
+          "requires": "instance_prompt setting"
+        },
+        "filename": {
+          "description": "Use filename as caption",
+          "use_case": "When filenames contain descriptive text"
+        },
+        "textfile": {
+          "description": "Use corresponding .txt files as captions",
+          "use_case": "When you have separate caption files"
+        },
+        "blip": {
+          "description": "Use BLIP model to generate captions",
+          "use_case": "When you want automatic captioning"
+        },
+        "none": {
+          "description": "No captions",
+          "use_case": "For style training without text conditioning"
+        }
+      }
+    },
+    
+    "metadata_settings": {
+      "metadata_backend": {
+        "description": "How to handle dataset metadata",
+        "options": {
+          "discovery": "Auto-discover metadata from files",
+          "json": "Use JSON metadata files",
+          "csv": "Use CSV metadata files"
+        }
+      },
+      "repeats": {
+        "description": "Number of times to repeat this dataset during training",
+        "default": 0,
+        "guidance": "Higher values for smaller datasets, lower for larger datasets"
+      }
+    },
+    
+    "text_embeds_settings": {
+      "default": {
+        "description": "Whether this is the default text embeddings dataset",
+        "default": true
+      },
+      "write_batch_size": {
+        "description": "Batch size for writing text embeddings to cache",
+        "default": 128
+      }
+    },
+    
+    "special_settings": {
+      "is_regularisation_data": {
+        "description": "Whether this dataset is used for regularization",
+        "use_case": "Helps prevent overfitting and preserve base model characteristics"
+      },
+      "dataset_type": {
+        "description": "Type of dataset (image or text_embeds)",
+        "default": "image"
+      }
+    },
+    
+    "example_configurations": {
+      "dreambooth_single_subject": {
+        "description": "Training a single subject with Dreambooth",
+        "config": {
+          "id": "dreambooth-subject",
+          "type": "local",
+          "crop": false,
+          "resolution": 1024,
+          "instance_data_dir": "datasets/dreambooth-subject",
+          "caption_strategy": "instanceprompt",
+          "instance_prompt": "your subject name",
+          "repeats": 1000
+        }
+      },
+      "style_training": {
+        "description": "Training a style with multiple images",
+        "config": {
+          "id": "style-dataset",
+          "type": "local",
+          "crop": true,
+          "crop_aspect": "square",
+          "crop_style": "center",
+          "resolution": 1024,
+          "instance_data_dir": "datasets/style-images",
+          "caption_strategy": "filename",
+          "repeats": 100
+        }
+      },
+      "multi_resolution": {
+        "description": "Training with multiple resolutions for better convergence",
+        "config": [
+          {
+            "id": "subject-1024",
+            "resolution": 1024,
+            "repeats": 500
+          },
+          {
+            "id": "subject-512", 
+            "resolution": 512,
+            "repeats": 500
+          }
+        ]
+      }
+    },
+    
+    "best_practices": {
+      "dataset_size": "Ensure dataset is larger than train_batch_size * gradient_accumulation_steps",
+      "image_quality": "Use high-quality images, especially for Flux training",
+      "caching": "Always use VAE and text encoder caching for faster training",
+      "regularization": "Consider using regularization data to prevent overfitting",
+      "repeats": "Adjust repeats based on dataset size - more repeats for smaller datasets"
+    }
+  }
+} 
