@@ -32,6 +32,9 @@ RUN apt-get update && \
 # Copy SimpleTuner source code into image
 COPY SimpleTuner /workspace/simpletuner
 
+# Copy Training_Configs into SimpleTuner directory
+COPY Training_Configs /workspace/simpletuner/Training_Configs
+
 WORKDIR /workspace/simpletuner
 
 # Install SimpleTuner dependencies with poetry (no virtualenv)
