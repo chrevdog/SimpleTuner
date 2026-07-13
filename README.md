@@ -161,3 +161,32 @@ For issues related to:
 - **SimpleTuner functionality:** [Original SimpleTuner Issues](https://github.com/bghira/SimpleTuner/issues)
 - **Docker container:** Create an issue in this repository
 - **Training problems:** Check the [SimpleTuner Documentation](https://github.com/bghira/SimpleTuner/tree/main/documentation) 
+
+<!-- PROJECT DOCUMENTATION - added 2026-06-08 -->
+
+## How It Works
+
+This is a **Docker wrapper** around the upstream [bghira/SimpleTuner](https://github.com/bghira/SimpleTuner) fine-tuning library. URBAN's copy (forked to `chrevdog/SimpleTuner`, branch `docker-setup`) adds no Python code of its own — it contributes a `Dockerfile`, a `start.sh` entrypoint, an `update_simpletuner.sh` helper, and a curated `Training_Configs/` directory of annotated templates.
+
+**Build and runtime flow:**
+- The `Dockerfile` starts from `runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04` (RunPod GPU base image), installs system deps, Poetry, JupyterLab, `lycoris-lora`, and `optimum-quanto`, then copies the upstream SimpleTuner source (expected as a submodule or local clone at `./SimpleTuner`) into `/workspace/simpletuner` and runs `poetry install` to install all upstream dependencies.
+- `start.sh` (the container entrypoint) creates symlinks so that `datasets/`, `config/`, `outputs/`, and `models/` inside `/workspace/simpletuner` point to a persistent volume mounted at `/workspace/storage`. This means training data and model outputs survive container restarts when using `-v $(pwd)/storage:/workspace/storage`.
+- After the symlinks are set up, JupyterLab starts on port 8888 with no token/password, serving `/workspace/simpletuner` as the notebook root. SSH is also exposed on port 22.
+
+**Training configuration** lives entirely in `Training_Configs/`. The directory contains explanation JSON files (read-only reference) and `_template` JSON files that users copy to `config/` and edit. Four config files drive a run: `config.json` (main hyperparams, model type, quantization), `lycoris_config.json` (LoKr/LoRA adapter algorithm), `multidatabackend.json` (dataset paths, resolution, caption strategy), and `user_prompt_library.json` (validation prompt set). A `config.env` sets Accelerate multi-GPU variables. The templates and the `TRAINING_CONFIGS.md` guide are focused on Flux.1 LoRA training with quantization options down to NF4/int4 (~9GB VRAM).
+
+No `urban_utils` usage is relevant here — this project has no Python entry points of its own and manages no API keys or image I/O at the URBAN layer. All training logic is in the upstream SimpleTuner codebase inside the container.
+
+## Does It Work? - verified 2026-06-08
+**Status: 🟡 Needs deps installed**
+
+| Check | Result |
+|-------|--------|
+| Python files compile | N/A — 0 Python files in this repo layer |
+| Import probe | N/A — no Python entry points to probe |
+| Entry points | `start.sh` (container entrypoint), `Dockerfile` (build), `update_simpletuner.sh` (upstream sync) |
+| Requirements | No `requirements.txt`; deps are managed by upstream SimpleTuner's `pyproject.toml` via Poetry inside the container. Docker and the upstream SimpleTuner source (submodule) are required to build. |
+| Tests on disk | No |
+
+**Not auto-tested:** Docker build, GPU availability, the upstream SimpleTuner training pipeline, RunPod pod provisioning, or JupyterLab connectivity.
+**Bottom line:** The wrapper is structurally complete and correct; actually running it requires Docker, a GPU with 9–30 GB VRAM (depending on quantization), and the upstream SimpleTuner source either as a submodule or manual clone into `./SimpleTuner` before the image build.
